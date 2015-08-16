@@ -1,0 +1,11 @@
+[package]
+name="ffigen_test"
+version="0.0.1"
+authors=["Val V"]
+
+[dependencies.ffigen]
+path = "../"
+
+[lib]
+name = "ffi_sample"
+crate_type = ["dylib"]

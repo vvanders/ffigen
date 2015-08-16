@@ -1,0 +1,11 @@
+[package]
+
+name="ffigen"
+version="0.0.1"
+authors=["Val V"]
+
+[dependencies]
+syntex_syntax = "*"
+
+[lib]
+name = "ffigen"

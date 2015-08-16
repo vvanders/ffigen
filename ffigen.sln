@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen", "ffigen.rsproj", "{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}"
+EndProject
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen_test", "test\ffigen_test.rsproj", "{BE267046-1FE1-4721-A118-87C56C67AE07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|default = Debug|default
+		Release|default = Release|default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Debug|default.ActiveCfg = Debug|default
+		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Debug|default.Build.0 = Debug|default
+		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Release|default.ActiveCfg = Release|default
+		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Release|default.Build.0 = Release|default
+		{BE267046-1FE1-4721-A118-87C56C67AE07}.Debug|default.ActiveCfg = Debug|default
+		{BE267046-1FE1-4721-A118-87C56C67AE07}.Debug|default.Build.0 = Debug|default
+		{BE267046-1FE1-4721-A118-87C56C67AE07}.Release|default.ActiveCfg = Release|default
+		{BE267046-1FE1-4721-A118-87C56C67AE07}.Release|default.Build.0 = Release|default
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
