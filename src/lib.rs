@@ -1,37 +1,40 @@
 extern crate syntex_syntax;
 
+mod parser;
+mod csharp;
+
+use std::env;
 use std::path::Path;
 
-use syntex_syntax::ast;
-use syntex_syntax::abi;
-use syntex_syntax::parse;
-use syntex_syntax::ptr::P;
-use syntex_syntax::visit;
+pub enum Lang {
+    CSharp,
+    Java,
+    C,
+    CPP
+}
 
-struct FnVisitor;
+pub fn gen_cargo() {
+    let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let src_dir = Path::new(&cargo_dir).join("src");
 
-impl<'v> visit::Visitor<'v> for FnVisitor {
-    fn visit_item(&mut self, item: &'v ast::Item) {
-        match item.node {
-            ast::ItemFn(_, _, _, abi, _, _) if abi == abi::C => {
-                println!("fn {:?}\n", item.ident.name)
-            },
+    let out_dir = Path::new(&cargo_dir).join("gen");
+
+    let mut langs: Vec<Lang> = Vec::new();
+    langs.push(Lang::CSharp);
+
+    gen(&src_dir, &out_dir, &langs);
+}
+
+pub fn gen(src: &Path, dest: &Path, langs: &Vec<Lang>) {
+    let exports = match parser::parse_dir(src) {
+        Ok(v) => v,
+        Err(e) => panic!("Unable to export {:?}", e)
+    };
+
+    for lang in langs {
+        match *lang {
+            Lang::CSharp => csharp::gen(&exports, dest),
             _ => ()
         }
     }
 }
-
-/*
-fn main() {
-    let path = Path::new("D:/rust/ffigen/src/sample.rs");
-
-    let cfg: Vec<P<ast::MetaItem>> = Vec::new();
-    let sess = parse::ParseSess::new();
-    let krate = parse::parse_crate_from_file(path, cfg, &sess);
-
-    let mut visitor = FnVisitor;
-    visit::walk_crate(&mut visitor, &krate);
-
-    //println!("\nast {:?}", krate);
-}
-*/

@@ -1,7 +1,5 @@
-﻿use std;
-
-pub extern fn foo() -> u32 {
-    0
+﻿pub extern fn foo(p: u32) -> u32 {
+    p
 }
 
 pub fn bar() -> u32 {

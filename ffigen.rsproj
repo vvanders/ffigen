@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">default</Platform>
+    <ProjectGuid>be1b6e3f-606c-4754-8464-b829d93ef89b</ProjectGuid>
+    <OutputType>library</OutputType>
+    <CrateName>ffigen</CrateName>
+    <Name>ffigen</Name>
+    <RootNamespace>ffigen</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|default' ">
+    <LinkTimeOptimization>false</LinkTimeOptimization>
+    <DebugSymbols>true</DebugSymbols>
+    <OptimizationLevel>0</OptimizationLevel>
+    <PlatformTarget>default</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|default' ">
+    <LinkTimeOptimization>false</LinkTimeOptimization>
+    <DebugSymbols>false</DebugSymbols>
+    <OptimizationLevel>2</OptimizationLevel>
+    <PlatformTarget>default</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="src\" />
+    <Code Include="src\lib.rs" />
+  </ItemGroup>
+  <ItemGroup>
+    <File Include="src\csharp.rs" />
+    <File Include="src\parser.rs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
+</Project>

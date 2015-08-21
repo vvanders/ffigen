@@ -2,25 +2,26 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen", "ffigen.rsproj", "{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}"
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen", "ffigen.rsproj", "{BE1B6E3F-606C-4754-8464-B829D93EF89B}"
 EndProject
-Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen_test", "test\ffigen_test.rsproj", "{BE267046-1FE1-4721-A118-87C56C67AE07}"
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen_test", "test\ffigen_test.rsproj", "{886A6AF5-01E3-4230-9C51-94A2453CC9CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp", "test\CSharp\CSharp.csproj", "{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|default = Debug|default
-		Release|default = Release|default
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Debug|default.ActiveCfg = Debug|default
-		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Debug|default.Build.0 = Debug|default
-		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Release|default.ActiveCfg = Release|default
-		{E6F9B5FF-3AD1-4C9F-BB28-4E40F5FB0B94}.Release|default.Build.0 = Release|default
-		{BE267046-1FE1-4721-A118-87C56C67AE07}.Debug|default.ActiveCfg = Debug|default
-		{BE267046-1FE1-4721-A118-87C56C67AE07}.Debug|default.Build.0 = Debug|default
-		{BE267046-1FE1-4721-A118-87C56C67AE07}.Release|default.ActiveCfg = Release|default
-		{BE267046-1FE1-4721-A118-87C56C67AE07}.Release|default.Build.0 = Release|default
+		{BE1B6E3F-606C-4754-8464-B829D93EF89B}.Debug|Any CPU.ActiveCfg = Debug|default
+		{BE1B6E3F-606C-4754-8464-B829D93EF89B}.Release|Any CPU.ActiveCfg = Release|default
+		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Debug|Any CPU.ActiveCfg = Debug|default
+		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Release|Any CPU.ActiveCfg = Release|default
+		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

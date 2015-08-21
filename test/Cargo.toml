@@ -2,8 +2,9 @@
 name="ffigen_test"
 version="0.0.1"
 authors=["Val V"]
+build="build.rs"
 
-[dependencies.ffigen]
+[build-dependencies.ffigen]
 path = "../"
 
 [lib]
