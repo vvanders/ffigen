@@ -1,23 +1,22 @@
 ﻿extern crate syntex_syntax;
 
+use std::ops::Deref;
+
 use std::fs;
 use std::io;
 use std::io::Write;
-use std::fmt;
 use std::path::Path;
-use std::ops::Deref;
-
-use syntex_syntax::ast;
-use syntex_syntax::ptr::P;
-use syntex_syntax::print;
 
 use parser;
 
 pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
     println!("Creating {:?}", dest);
-    fs::create_dir(dest);
+    if let Err(e) = fs::create_dir(dest) {
+        println!("Unable to create dir {:?} {}", dest, e)
+    }
 
-    let file = match fs::File::create(dest.join("mod.cs")) {
+    let out_path = dest.join("mod.cs");
+    let file = match fs::File::create(&out_path) {
         Ok(f) => f,
         Err(e) => panic!("Unable to open file {:?}", e)
     };
@@ -32,7 +31,10 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
 
     let mut writer = io::BufWriter::new(&file);
     let bytes = content.into_bytes();
-    writer.write_all(bytes.into_boxed_slice().deref());
+
+    if let Err(e) = writer.write_all(bytes.into_boxed_slice().deref()) {
+        panic!("Unable to write file {:?} {}", out_path, e);
+    }
 }
 
 fn write_header() -> String {
@@ -42,7 +44,7 @@ fn write_header() -> String {
 fn write_export(content: &mut String, export: &parser::FuncDecl) {
     content.push_str("\t[DllImport(\"ffi_sample.dll\")]\n");
     
-    let func_name = export.name.as_str();
+    let func_name = &export.name;
     let mut params = "".to_string();
 
     for param in &export.args {
@@ -50,33 +52,37 @@ fn write_export(content: &mut String, export: &parser::FuncDecl) {
             params.push_str(", ");
         }
 
-        let param_type = translate_type(&param.ty);
-        let param_name = print::pprust::pat_to_string(param.pat.deref());
-        let param_dec = format!("{} {}", param_type, param_name);
+        let param_dec = format!("{} {}", translate_type(param.ty), param.name);
 
         params.push_str(param_dec.as_ref());
     }
 
-    let ret_type = match export.ret {
-        ast::FunctionRetTy::NoReturn(_) => "void".to_string(),
-        ast::FunctionRetTy::DefaultReturn(_) => "void".to_string(),
-        ast::FunctionRetTy::Return(ref r) => translate_type(r)
-    };
-
-    let func_decl = format!("\t{} {}({});\n", ret_type, func_name, params);
+    let func_decl = format!("\t{} {}({});\n", translate_ret_type(export.ret), func_name, params);
 
     content.push_str(func_decl.as_ref());
 }
 
-fn write_footer(content: &mut String) {
-    content.push_str("}");
+fn translate_ret_type(ty: parser::ReturnType) -> &'static str {
+    match ty {
+        parser::ReturnType::Void => "void",
+        parser::ReturnType::Type(t) => translate_type(t)
+    }
 }
 
-fn translate_type(ty: &P<ast::Ty>) -> String {
-    let rust_type = print::pprust::to_string(|s| s.print_type(ty));
-
-    match rust_type.as_ref() {
-        "u32" => "uint".to_string(),
-        _ => panic!("Unknown type {}", rust_type)
+fn translate_type(ty: parser::Type) -> &'static str {
+    match ty {
+        parser::Type::U32 => "uint",
+        parser::Type::U16 => "ushort",
+        parser::Type::U8 => "ubyte",
+        parser::Type::I32 => "int",
+        parser::Type::I16 => "short",
+        parser::Type::I8 => "byte",
+        parser::Type::F32 => "float",
+        parser::Type::F64 => "double",
+        parser::Type::Boolean => "bool"
     }
+}
+
+fn write_footer(content: &mut String) {
+    content.push_str("}");
 }

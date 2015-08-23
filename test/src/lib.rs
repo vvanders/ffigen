@@ -1,8 +1,11 @@
-﻿pub extern fn foo(p: u32) -> u32 {
+﻿mod one;
+mod two;
+
+pub extern fn foo(p: u32) -> u32 {
     p
 }
 
-pub fn bar() -> u32 {
+pub extern fn bar() -> u32 {
     0
 }
 

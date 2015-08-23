@@ -13,27 +13,43 @@ pub enum Lang {
     CPP
 }
 
-pub fn gen_cargo() {
-    let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let src_dir = Path::new(&cargo_dir).join("src");
-
-    let out_dir = Path::new(&cargo_dir).join("gen");
-
-    let mut langs: Vec<Lang> = Vec::new();
-    langs.push(Lang::CSharp);
-
-    gen(&src_dir, &out_dir, &langs);
+pub enum Config {
+    Output(String)
 }
 
-pub fn gen(src: &Path, dest: &Path, langs: &Vec<Lang>) {
-    let exports = match parser::parse_dir(src) {
-        Ok(v) => v,
-        Err(e) => panic!("Unable to export {:?}", e)
-    };
+pub struct Context {
+    crate_root: String,
+    langs: Vec<(Lang, Vec<Config>)>
+}
 
-    for lang in langs {
+pub fn gen_cargo() {
+    let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let mut context = Context { crate_root: cargo_dir.clone(), langs: Vec::new() };
+
+    context.langs.push((Lang::CSharp, Vec::new()));
+
+    gen(&context);
+}
+
+pub fn gen(context: &Context) {
+    let src_dir = Path::new(&context.crate_root).join("src").join("lib.rs");
+    let (exports, _) = parser::parse(&src_dir);
+    
+    for &(ref lang, ref opt) in context.langs.iter() {
+        //Select our option if we have it
+        let opt_dir = opt.iter()
+                .filter_map(|o| match *o { Config::Output(ref s) => Some(s.clone()) })
+                .fold(None, |_, o| Some(o.clone()));
+
+        let out_dir = match opt_dir {
+            Some(ref s) => Path::new(s).to_path_buf(),
+            None => {
+                Path::new(&context.crate_root).join("gen")
+            }
+        };
+
         match *lang {
-            Lang::CSharp => csharp::gen(&exports, dest),
+            Lang::CSharp => csharp::gen(&exports, &out_dir),
             _ => ()
         }
     }
