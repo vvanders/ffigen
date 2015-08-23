@@ -10,9 +10,14 @@ use std::path::Path;
 use parser;
 
 pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
-    println!("Creating {:?}", dest);
-    if let Err(e) = fs::create_dir(dest) {
-        println!("Unable to create dir {:?} {}", dest, e)
+    if let Err(metae) = fs::metadata(&dest) {
+        if metae.kind() == io::ErrorKind::NotFound {
+            println!("Creating {:?}", dest);
+            if let Err(e) = fs::create_dir(dest) {
+                panic!("Unable to create dir {:?} {}", dest, e)
+            }
+        }
+        
     }
 
     let out_path = dest.join("mod.cs");
