@@ -1,4 +1,5 @@
-﻿mod module;
+﻿pub mod cargo;
+mod module;
 mod source;
 
 use std::fs;

@@ -1,6 +1,4 @@
-﻿extern crate syntex_syntax;
-
-use std::ops::Deref;
+﻿use std::ops::Deref;
 
 use std::path::Path;
 
@@ -28,16 +26,36 @@ impl<'v> visit::Visitor<'v> for FnVisitor<'v> {
     fn visit_item(&mut self, item: &'v ast::Item) {
         match item.node {
             ast::ItemFn(ref decl, _, _, abi, _, _) if abi == abi::C => {
-                let export = sanitize_export(&item.ident.name, &decl.output, &decl.inputs);
-                self.exports.push(export);
+                let mangle = item.attrs.iter()
+                        .any(|v| {
+                            match v.node.value.node {
+                                ast::MetaItem_::MetaWord(ref w) => interned_to_string(w) == "no_mangle",
+                                _ => false
+                            }
+                        });
 
-                println!("fn {:?} {:?} {:?}", item.ident.name, decl, item.vis);
+                //Don't export private functions
+                if item.vis == ast::Visibility::Public {
+                    if mangle {
+                        let export = sanitize_export(&item.ident.name, &decl.output, &decl.inputs);
+
+                        println!("Exporting {}", &export.name);
+                        self.exports.push(export);
+                    } else {
+                    }
+                } else {
+                    println!("Skipping export of {} due to not being public", &name_to_string(&item.ident.name));
+                }
             },
-            ast::ItemMod(ref module) => {
-                let export = sanitize_module(&item.ident.name);
-                self.modules.push(export);
+            ast::ItemMod(_) => {
+                if item.vis == ast::Visibility::Public {
+                    let export = sanitize_module(&item.ident.name);
+                    println!("Exporting module {}", export.name);
 
-                println!("mod {:?} {:?}", module, item.ident.name);
+                    self.modules.push(export);
+                } else {
+                    println!("Skipping export of module {} due to not being public", &name_to_string(&item.ident.name));
+                }
             },
             _ => ()
         }
@@ -78,9 +96,17 @@ fn sanitize_export(name: &ast::Name, ret: &ast::FunctionRetTy, args: &Vec<ast::A
         args_san.push(Arg { name: print::pprust::pat_to_string(arg.pat.deref()), ty: translate_type(&arg.ty) }); 
     }
 
-    let func_name = name.deref().as_str().deref().to_string();
+    let func_name = name_to_string(&name);
 
     FuncDecl { name: func_name, ret: ret_san, args: args_san }
+}
+
+fn interned_to_string(interned: &parse::token::InternedString) -> String {
+    interned.deref().to_string()
+}
+
+fn name_to_string(name: &ast::Name) -> String {
+    interned_to_string(&name.deref().as_str())
 }
 
 fn translate_type(ty: &P<ast::Ty>) -> Type {

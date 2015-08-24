@@ -8,8 +8,9 @@ use std::io::Write;
 use std::path::Path;
 
 use parser;
+use parser::cargo;
 
-pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
+pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) {
     if let Err(metae) = fs::metadata(&dest) {
         if metae.kind() == io::ErrorKind::NotFound {
             println!("Creating {:?}", dest);
@@ -17,7 +18,10 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
                 panic!("Unable to create dir {:?} {}", dest, e)
             }
         }
-        
+    }
+
+    if !package_info.is_dynamic {
+        panic!("Unable to export {} because library is not dynamic", package_info.name);
     }
 
     let out_path = dest.join("mod.cs");
@@ -26,10 +30,10 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
         Err(e) => panic!("Unable to open file {:?}", e)
     };
 
-    let mut content = write_header();
+    let mut content = write_header(package_info);
 
     for export in exports {
-        write_export(&mut content, export);
+        write_export(&mut content, export, package_info);
     }
 
     write_footer(&mut content);
@@ -42,12 +46,13 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) {
     }
 }
 
-fn write_header() -> String {
-    "namespace rust {\n".to_string()
+fn write_header(package_info: &cargo::Info) -> String {
+    format!("namespace rust {{\n\tnamespace {} {{\n", package_info.name)
 }
 
-fn write_export(content: &mut String, export: &parser::FuncDecl) {
-    content.push_str("\t[DllImport(\"ffi_sample.dll\")]\n");
+fn write_export(content: &mut String, export: &parser::FuncDecl, package_info: &cargo::Info) {
+    let import_dec = format!("\t\t[DllImport(\"{}.dll\")]\n", package_info.lib_name);
+    content.push_str(import_dec.as_ref());
     
     let func_name = &export.name;
     let mut params = "".to_string();
@@ -62,7 +67,7 @@ fn write_export(content: &mut String, export: &parser::FuncDecl) {
         params.push_str(param_dec.as_ref());
     }
 
-    let func_decl = format!("\t{} {}({});\n", translate_ret_type(export.ret), func_name, params);
+    let func_decl = format!("\t\tstatic extern {} {}({});\n", translate_ret_type(export.ret), func_name, params);
 
     content.push_str(func_decl.as_ref());
 }
@@ -89,5 +94,5 @@ fn translate_type(ty: parser::Type) -> &'static str {
 }
 
 fn write_footer(content: &mut String) {
-    content.push_str("}");
+    content.push_str("\t}\n}");
 }

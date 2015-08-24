@@ -24,10 +24,13 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Code Include="src\lib.rs" />
+    <Folder Include="src\parser\" />
   </ItemGroup>
   <ItemGroup>
     <File Include="src\csharp.rs" />
-    <File Include="src\parser.rs" />
+    <File Include="src\parser\cargo.rs" />
+    <File Include="src\parser\mod.rs" />
+    <File Include="src\parser\module.rs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\VisualRust\VisualRust.Rust.targets" />
 </Project>
