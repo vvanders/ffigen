@@ -10,6 +10,8 @@ namespace CSharp
     {
         static void Main(string[] args)
         {
+            uint result = rust.ffigen_test.foo(1);
+            Console.Write(result);
         }
     }
 }

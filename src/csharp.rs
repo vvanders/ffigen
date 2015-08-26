@@ -47,7 +47,12 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &P
 }
 
 fn write_header(package_info: &cargo::Info) -> String {
-    format!("using System.Runtime.InteropServices;\n\nnamespace rust {{\n\tclass {} {{\n", package_info.name)
+    format!(
+r"using System.Runtime.InteropServices;
+
+namespace rust {{
+    class {} {{
+", package_info.name)
 }
 
 fn write_export(content: &mut String, export: &parser::FuncDecl, package_info: &cargo::Info) {
@@ -67,7 +72,7 @@ fn write_export(content: &mut String, export: &parser::FuncDecl, package_info: &
         params.push_str(param_dec.as_ref());
     }
 
-    let func_decl = format!("\t\tstatic extern {} {}({});\n", translate_ret_type(export.ret), func_name, params);
+    let func_decl = format!("\t\tpublic static extern {} {}({});\n", translate_ret_type(export.ret), func_name, params);
 
     content.push_str(func_decl.as_ref());
 }
@@ -94,5 +99,7 @@ fn translate_type(ty: parser::Type) -> &'static str {
 }
 
 fn write_footer(content: &mut String) {
-    content.push_str("\t}\n}");
+    content.push_str(
+r"    }
+}");
 }

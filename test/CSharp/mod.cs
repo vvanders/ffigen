@@ -1,13 +1,14 @@
 using System.Runtime.InteropServices;
+
 namespace rust {
-	class ffigen_test {
+    class ffigen_test {
 		[DllImport("ffi_sample.dll")]
-		static extern uint foo(uint p);
+		public static extern uint foo(uint p);
 		[DllImport("ffi_sample.dll")]
-		static extern uint bar();
+		public static extern uint bar();
 		[DllImport("ffi_sample.dll")]
-		static extern uint baz(uint p);
+		public static extern uint baz(uint p);
 		[DllImport("ffi_sample.dll")]
-		static extern uint baz2(uint p);
-	}
+		public static extern uint baz2(uint p);
+    }
 }
