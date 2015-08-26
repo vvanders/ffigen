@@ -14,6 +14,7 @@ pub enum Lang {
     CPP
 }
 
+#[derive(Clone)]
 pub enum Config {
     Output(String)
 }
@@ -23,9 +24,25 @@ pub struct Context {
     langs: Vec<(Lang, Vec<Config>)>
 }
 
+pub fn new_context() -> Context {
+    Context { crate_root: env::var("CARGO_MANIFEST_DIR").unwrap(), langs: Vec::new() }
+}
+
+impl Context {
+    pub fn add_lang(&mut self, lang: Lang, opts: &[Config]) {
+        let mut vec_opts: Vec<Config> = Vec::new();
+
+        for opt in opts {
+            let opt_value = opt.clone();
+            vec_opts.push(opt_value);
+        }
+
+        self.langs.push((lang, vec_opts));
+    }
+}
+
 pub fn gen_cargo() {
-    let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let mut context = Context { crate_root: cargo_dir.clone(), langs: Vec::new() };
+    let mut context = new_context();
 
     context.langs.push((Lang::CSharp, Vec::new()));
 

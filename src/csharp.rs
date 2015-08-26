@@ -47,7 +47,7 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &P
 }
 
 fn write_header(package_info: &cargo::Info) -> String {
-    format!("namespace rust {{\n\tnamespace {} {{\n", package_info.name)
+    format!("using System.Runtime.InteropServices;\n\nnamespace rust {{\n\tclass {} {{\n", package_info.name)
 }
 
 fn write_export(content: &mut String, export: &parser::FuncDecl, package_info: &cargo::Info) {
