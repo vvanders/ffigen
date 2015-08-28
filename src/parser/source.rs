@@ -122,6 +122,10 @@ fn translate_type(ty: &P<ast::Ty>) -> Type {
         "f32" => Type::F32,
         "f64" => Type::F64,
         "bool" => Type::Boolean,
+        "String" => Type::String,
+		"&String" => Type::StringRef,
+        "str" => Type::Str,
+        "&str" => Type::StrRef,
         _ => panic!("Unknown type {}", rust_type)
     }
 }

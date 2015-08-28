@@ -15,7 +15,11 @@ pub enum Type {
     I8,
     F32,
     F64,
-    Boolean
+    Boolean,
+	String,
+    Str,
+    StringRef,
+    StrRef
 }
 
 #[derive(Copy, Clone)]

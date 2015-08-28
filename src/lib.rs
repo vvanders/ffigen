@@ -2,7 +2,7 @@ extern crate syntex_syntax;
 extern crate toml;
 
 mod parser;
-mod csharp;
+mod gen;
 
 use std::env;
 use std::path::Path;
@@ -21,11 +21,15 @@ pub enum Config {
 
 pub struct Context {
     crate_root: String,
+    output_wrapper: String,
     langs: Vec<(Lang, Vec<Config>)>
 }
 
 pub fn new_context() -> Context {
-    Context { crate_root: env::var("CARGO_MANIFEST_DIR").unwrap(), langs: Vec::new() }
+    let root = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let src = Path::new(&root).join("src");
+
+    Context { crate_root: root, output_wrapper: String::from(src.to_str().unwrap()), langs: Vec::new() }
 }
 
 impl Context {
@@ -55,6 +59,8 @@ pub fn gen(context: &Context) {
 
     let src_dir = root.join("src").join("lib.rs");
     let (exports, _) = parser::parse(&src_dir);
+
+    gen::marshal::gen(&exports, &package_info, Path::new(&context.output_wrapper));
     
     for &(ref lang, ref opt) in context.langs.iter() {
         //Select our option if we have it
@@ -69,9 +75,13 @@ pub fn gen(context: &Context) {
             }
         };
 
-        match *lang {
-            Lang::CSharp => csharp::gen(&exports, &package_info, &out_dir),
-            _ => ()
+        let result = match *lang {
+            Lang::CSharp => gen::csharp::gen(&exports, &package_info, &out_dir),
+            _ => Ok(())
+        };
+
+        if let Err(e) = result {
+            panic!("Unable to export {}", e);
         }
     }
 }

@@ -1,34 +1,18 @@
 ﻿extern crate syntex_syntax;
 
-use std::ops::Deref;
-
-use std::fs;
-use std::io;
-use std::io::Write;
+use std;
 use std::path::Path;
 
 use parser;
 use parser::cargo;
+use gen::util;
 
-pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) {
-    if let Err(metae) = fs::metadata(&dest) {
-        if metae.kind() == io::ErrorKind::NotFound {
-            println!("Creating {:?}", dest);
-            if let Err(e) = fs::create_dir(dest) {
-                panic!("Unable to create dir {:?} {}", dest, e)
-            }
-        }
-    }
-
+pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) -> std::io::Result<()> {
     if !package_info.is_dynamic {
         panic!("Unable to export {} because library is not dynamic", package_info.name);
     }
 
     let out_path = dest.join("mod.cs");
-    let file = match fs::File::create(&out_path) {
-        Ok(f) => f,
-        Err(e) => panic!("Unable to open file {:?}", e)
-    };
 
     let mut content = write_header(package_info);
 
@@ -38,12 +22,7 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &P
 
     write_footer(&mut content);
 
-    let mut writer = io::BufWriter::new(&file);
-    let bytes = content.into_bytes();
-
-    if let Err(e) = writer.write_all(bytes.into_boxed_slice().deref()) {
-        panic!("Unable to write file {:?} {}", out_path, e);
-    }
+    util::write_source(&content, &out_path)
 }
 
 fn write_header(package_info: &cargo::Info) -> String {
@@ -94,7 +73,11 @@ fn translate_type(ty: parser::Type) -> &'static str {
         parser::Type::I8 => "byte",
         parser::Type::F32 => "float",
         parser::Type::F64 => "double",
-        parser::Type::Boolean => "bool"
+        parser::Type::Boolean => "bool",
+		parser::Type::String => "string",
+        parser::Type::StringRef => "string",
+        parser::Type::Str => "string",
+        parser::Type::StrRef => "string"
     }
 }
 
