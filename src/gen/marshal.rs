@@ -2,10 +2,9 @@
 use std::path::Path;
 
 use parser;
-use parser::cargo;
 use gen::util;
 
-pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) -> std::io::Result<()> {
+pub fn gen(exports: &Vec<parser::FuncDecl>, dest: &Path) -> std::io::Result<()> {
     let mut content = String::new();
 
     for func in exports {
@@ -14,8 +13,11 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &P
         } 
     }
 
+    print!("exporting marshal\n");
     if content.len() > 0 {
-        let output = dest.join("mod.rs");
+        let output = dest.join("ffigen").join("mod.rs");
+
+        print!("exporting marshal {:?}\n", output);
 
         util::write_source(&content, &output)
     } else {
@@ -61,9 +63,14 @@ fn append_func(func: &parser::FuncDecl, func_name: &String, content: &mut String
         params.push_str(param_dec.as_ref());
     }
 
-    let func_decl = format!("pub extern fn {}({});\n", func_name, params);
+    let func_decl = match func.ret {
+        parser::ReturnType::Void => format!("pub extern fn {}({}) {{\n", func_name, params),
+        parser::ReturnType::Type(t) => format!("pub extern fn {}({}) -> {} {{\n", func_name, params, translate_type(t))
+    };
 
     content.push_str(func_decl.as_ref());
+
+    content.push_str("}\n");
 }
 
 fn translate_type(ty: parser::Type) -> &'static str {

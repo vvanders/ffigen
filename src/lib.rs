@@ -60,7 +60,11 @@ pub fn gen(context: &Context) {
     let src_dir = root.join("src").join("lib.rs");
     let (exports, _) = parser::parse(&src_dir);
 
-    gen::marshal::gen(&exports, &package_info, Path::new(&context.output_wrapper));
+    let marshal_result = gen::marshal::gen(&exports, Path::new(&context.output_wrapper));
+
+    if let Err(e) = marshal_result {
+        panic!("Unable to export {}", e);
+    }
     
     for &(ref lang, ref opt) in context.langs.iter() {
         //Select our option if we have it

@@ -1,9 +1,7 @@
-﻿#![feature(cstr_memory)]
-
-pub mod one;
+﻿pub mod one;
 pub mod two;
 
-use std::ffi::CString;
+mod ffigen;
 
 #[no_mangle]
 pub extern fn foo(p: u32) -> u32 {
@@ -11,11 +9,8 @@ pub extern fn foo(p: u32) -> u32 {
 }
 
 #[no_mangle]
-pub extern fn foostr(p: *const i8) {
-	unsafe {
-		let cstr = CString::from_ptr(p);
-		println!("{}", cstr.to_str().unwrap());
-	}
+pub extern fn foostr(p: &str) {
+	println!("{}", p);
 }
 
 #[no_mangle]
