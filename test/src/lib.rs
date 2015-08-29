@@ -1,7 +1,7 @@
 ﻿pub mod one;
 pub mod two;
 
-mod ffigen;
+pub mod ffigen;
 
 #[no_mangle]
 pub extern fn foo(p: u32) -> u32 {
@@ -10,7 +10,7 @@ pub extern fn foo(p: u32) -> u32 {
 
 #[no_mangle]
 pub extern fn foostr(p: &String, p2: u32) {
-	println!("{}", p);
+	println!("{}\n", p);
 }
 
 #[no_mangle]

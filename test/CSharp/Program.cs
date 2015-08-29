@@ -10,6 +10,7 @@ namespace CSharp
     {
         static void Main(string[] args)
         {
+            rust.ffigen_test.foostr("bar", 2);
             uint result = rust.ffigen_test.foo(1);
             Console.Write(result);
         }

@@ -10,6 +10,11 @@ pub fn parse(src: &Path, modules: &Vec<ModuleDecl>, parent_module: &String) -> (
     let mut exports_mod = Vec::new();
 
     for module in modules {
+        //Don't parse our marshalling library
+        if module.name == "ffigen" && parent_module == "" {
+            continue;
+        }
+
         let root = match src.parent() {
             Some(v) => v,
             None => panic!("Unable to find root for {:?}", &src)

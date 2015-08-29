@@ -3,6 +3,7 @@
 
 extern crate ffigen;
 
+#[no_mangle]
 pub extern fn foostr_marshal(p: *const u8, p2: u32) {
 	let p_shadow = ffigen::marshal::cstr_to_string(p);
 	super::foostr(&p_shadow, p2);

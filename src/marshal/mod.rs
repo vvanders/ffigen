@@ -27,14 +27,14 @@ fn get_ascii_bytes(cstr: *const u8) -> Vec<u8> {
 
     let mut idx = 0;
     loop {
-        match idx {
+        let ascii = unsafe { *cstr.offset(idx) };
+
+        match ascii {
             0 => break,
             _ => ()
         }
-
-        unsafe {
-            buffer.push(*cstr.offset(idx));
-        }
+        
+        buffer.push(ascii);
 
         idx += 1;
     }

@@ -6,6 +6,7 @@ use std::path::Path;
 use parser;
 use parser::cargo;
 use gen::util;
+use gen::marshal;
 
 pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) -> std::io::Result<()> {
     if !package_info.is_dynamic {
@@ -35,7 +36,11 @@ namespace rust {{
 }
 
 fn write_export(content: &mut String, export: &parser::FuncDecl, package_info: &cargo::Info) {
-    let import_dec = format!("\t\t[DllImport(\"{}.dll\")]\n", package_info.lib_name);
+    let import_dec = match marshal::get_mangled_fn(export) {
+        Some(mangled) => format!("\t\t[DllImport(\"{}.dll\", EntryPoint=\"{}\")]\n", package_info.lib_name, mangled),
+        None => format!("\t\t[DllImport(\"{}.dll\")]\n", package_info.lib_name)
+    };
+
     content.push_str(import_dec.as_ref());
     
     let func_name = &export.name;

@@ -73,8 +73,8 @@ fn append_func(func: &parser::FuncDecl, func_name: &String, content: &mut String
     }
 
     let func_decl = match func.ret {
-        parser::ReturnType::Void => format!("pub extern fn {}({}) {{\n", func_name, params),
-        parser::ReturnType::Type(t) => format!("pub extern fn {}({}) -> {} {{\n", func_name, params, translate_type(t))
+        parser::ReturnType::Void => format!("#[no_mangle]\npub extern fn {}({}) {{\n", func_name, params),
+        parser::ReturnType::Type(t) => format!("#[no_mangle]\npub extern fn {}({}) -> {} {{\n", func_name, params, translate_type(t))
     };
 
     func_invoke.push_str(");\n");
