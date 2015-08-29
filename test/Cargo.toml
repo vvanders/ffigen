@@ -7,6 +7,9 @@ build="build.rs"
 [build-dependencies.ffigen]
 path = "../"
 
+[dependencies.ffigen]
+path = "../"
+
 [lib]
 name = "ffi_sample"
 crate_type = ["dylib"]

@@ -24,10 +24,16 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Code Include="src\lib.rs" />
+    <Folder Include="src\gen\" />
+    <Folder Include="src\marshal\" />
     <Folder Include="src\parser\" />
   </ItemGroup>
   <ItemGroup>
-    <File Include="src\csharp.rs" />
+    <File Include="src\gen\csharp.rs" />
+    <File Include="src\gen\marshal.rs" />
+    <File Include="src\gen\mod.rs" />
+    <File Include="src\gen\util.rs" />
+    <File Include="src\marshal\mod.rs" />
     <File Include="src\parser\cargo.rs" />
     <File Include="src\parser\mod.rs" />
     <File Include="src\parser\module.rs" />

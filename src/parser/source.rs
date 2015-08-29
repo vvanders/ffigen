@@ -13,12 +13,13 @@ use syntex_syntax::print;
 
 struct FnVisitor<'a> {
     exports: &'a mut Vec<FuncDecl>,
-    modules: &'a mut Vec<ModuleDecl>
+    modules: &'a mut Vec<ModuleDecl>,
+    parent_module: &'a String
 }
 
 impl<'a> FnVisitor<'a> {
-    fn new(exports: &'a mut Vec<FuncDecl>, modules: &'a mut Vec<ModuleDecl>) -> FnVisitor<'a> {
-        FnVisitor { exports: exports, modules: modules }
+    fn new(exports: &'a mut Vec<FuncDecl>, modules: &'a mut Vec<ModuleDecl>, parent_module: &'a String) -> FnVisitor<'a> {
+        FnVisitor { exports: exports, modules: modules, parent_module: parent_module }
     }
 }
 
@@ -37,9 +38,9 @@ impl<'v> visit::Visitor<'v> for FnVisitor<'v> {
                 //Don't export private functions
                 if item.vis == ast::Visibility::Public {
                     if mangle {
-                        let export = sanitize_export(&item.ident.name, &decl.output, &decl.inputs);
+                        let export = sanitize_export(&item.ident.name, &decl.output, &decl.inputs, self.parent_module);
 
-                        println!("Exporting {}", &export.name);
+                        println!("Exporting {}::{}", &export.module, &export.name);
                         self.exports.push(export);
                     } else {
                     }
@@ -49,7 +50,7 @@ impl<'v> visit::Visitor<'v> for FnVisitor<'v> {
             },
             ast::ItemMod(_) => {
                 if item.vis == ast::Visibility::Public {
-                    let export = sanitize_module(&item.ident.name);
+                    let export = sanitize_module(&item.ident.name, self.parent_module);
                     println!("Exporting module {}", export.name);
 
                     self.modules.push(export);
@@ -62,7 +63,7 @@ impl<'v> visit::Visitor<'v> for FnVisitor<'v> {
     }
 }
 
-pub fn parse(path: &Path) -> (Vec<FuncDecl>, Vec<ModuleDecl>) {
+pub fn parse(path: &Path, parent_module: &String) -> (Vec<FuncDecl>, Vec<ModuleDecl>) {
     let mut exports: Vec<FuncDecl> = Vec::new();
     let mut modules: Vec<ModuleDecl> = Vec::new();
 
@@ -72,19 +73,25 @@ pub fn parse(path: &Path) -> (Vec<FuncDecl>, Vec<ModuleDecl>) {
 
     //Scope exports and modules so we can return
     {
-        let mut visitor = FnVisitor::new(&mut exports, &mut modules);
+        let mut visitor = FnVisitor::new(&mut exports, &mut modules, &parent_module);
         visit::walk_crate(&mut visitor, &krate);
     }
 
     (exports, modules)
 }
 
-fn sanitize_module(name: &ast::Name) -> ModuleDecl {
+fn sanitize_module(name: &ast::Name, parent_module: &String) -> ModuleDecl {
     let module_name = name.deref().as_str().deref().to_string();
-    ModuleDecl { name: module_name }
+    let module_path = if parent_module.len() > 0 {
+        format!("{}::{}", parent_module, &module_name)
+    } else {
+        module_name.clone()
+    };
+
+    ModuleDecl { name: module_name, path: module_path }
 }
 
-fn sanitize_export(name: &ast::Name, ret: &ast::FunctionRetTy, args: &Vec<ast::Arg>) -> FuncDecl {
+fn sanitize_export(name: &ast::Name, ret: &ast::FunctionRetTy, args: &Vec<ast::Arg>, module_path: &String) -> FuncDecl {
     let ret_san = match *ret {
         ast::FunctionRetTy::DefaultReturn(_) | ast::FunctionRetTy::NoReturn(_) => ReturnType::Void,
         ast::FunctionRetTy::Return(ref r) => ReturnType::Type(translate_type(r))
@@ -98,7 +105,7 @@ fn sanitize_export(name: &ast::Name, ret: &ast::FunctionRetTy, args: &Vec<ast::A
 
     let func_name = name_to_string(&name);
 
-    FuncDecl { name: func_name, ret: ret_san, args: args_san }
+    FuncDecl { name: func_name, ret: ret_san, args: args_san, module: module_path.clone() }
 }
 
 fn interned_to_string(interned: &parse::token::InternedString) -> String {

@@ -36,21 +36,23 @@ pub struct Arg {
 pub struct FuncDecl {
     pub name: String,
     pub ret: ReturnType,
-    pub args: Vec<Arg>
+    pub args: Vec<Arg>,
+    pub module: String
 }
 
 pub struct ModuleDecl {
-    pub name: String
+    pub name: String,
+    pub path: String
 }
 
-pub fn parse(path: &Path) -> (Vec<FuncDecl>, Vec<ModuleDecl>) {
+pub fn parse(path: &Path, module_path: &String) -> (Vec<FuncDecl>, Vec<ModuleDecl>) {
     match fs::metadata(&path) {
         Err(e) => panic!("Unable to parse {:?} {}", &path, e),
         Ok(_) => ()
     }
 
-    let (mut exports, mut modules) = source::parse(path);
-    let (sub_exports, sub_modules) = module::parse(&path, &modules);
+    let (mut exports, mut modules) = source::parse(path, module_path);
+    let (sub_exports, sub_modules) = module::parse(&path, &modules, module_path);
 
     exports.extend(sub_exports.into_iter());
     modules.extend(sub_modules.into_iter());

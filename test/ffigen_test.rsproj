@@ -24,12 +24,14 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Code Include="src\lib.rs" />
+    <Folder Include="src\ffigen\" />
     <Folder Include="src\two\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="build.rs" />
   </ItemGroup>
   <ItemGroup>
+    <File Include="src\ffigen\mod.rs" />
     <File Include="src\one.rs" />
     <File Include="src\two\mod.rs" />
   </ItemGroup>

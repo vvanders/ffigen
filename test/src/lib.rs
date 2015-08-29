@@ -9,7 +9,7 @@ pub extern fn foo(p: u32) -> u32 {
 }
 
 #[no_mangle]
-pub extern fn foostr(p: &str) {
+pub extern fn foostr(p: &String, p2: u32) {
 	println!("{}", p);
 }
 
