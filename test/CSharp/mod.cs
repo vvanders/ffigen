@@ -5,7 +5,7 @@ namespace rust {
 		[DllImport("ffi_sample.dll")]
 		public static extern uint foo(uint p);
 		[DllImport("ffi_sample.dll", EntryPoint="foostr_marshal")]
-		public static extern void foostr(string p, uint p2);
+		public static extern string foostr(string p, uint p2);
 		[DllImport("ffi_sample.dll")]
 		public static extern uint bar();
 		[DllImport("ffi_sample.dll")]

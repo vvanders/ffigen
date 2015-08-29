@@ -11,7 +11,8 @@ pub fn cstr_to_string(cstr: *const u8) -> String {
 }
 
 pub fn allocate_cstr(data: &String) -> *mut u8 {
-    let alloc: *mut u8 = unsafe { mem::transmute(Box::new(data.clone())) };
+    let translated = truncate_utf8_to_ascii(data.as_ref());
+    let alloc: *mut u8 = unsafe { mem::transmute(Box::new(translated.clone())) };
 
     alloc
 }
@@ -20,6 +21,16 @@ pub extern fn release_cstr(data: *mut u8) {
     let boxed: Box<String> = unsafe { mem::transmute(data) };
 
     drop(boxed);
+}
+
+fn truncate_utf8_to_ascii(data: &str) -> Vec<u8> {
+    let mut truncated = Vec::new();
+
+    for utf8 in data.chars() {
+        truncated.push(utf8 as u8);
+    }
+
+    truncated
 }
 
 fn get_ascii_bytes(cstr: *const u8) -> Vec<u8> {

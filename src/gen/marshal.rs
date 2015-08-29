@@ -49,37 +49,85 @@ pub fn get_mangled_fn(func: &parser::FuncDecl) -> Option<String> {
     }
 }
 
-fn append_func(func: &parser::FuncDecl, func_name: &String, content: &mut String) {
-    let mut params = String::new();
-    let mut func_body = String::new();
-    let mut func_invoke = format!("\tsuper::{}{}(", func.module, func.name);
+fn get_invoke_args(args: &Vec<parser::Arg>) -> String {
+    args.iter()
+        .map(|arg| format!("{}: {}", arg.name, translate_type(arg.ty)) )
+        .fold(String::new(), |acc, arg| {
+            match acc.len() {
+                0 => arg,
+                _ => format!("{}, {}", acc, arg)
+            }
+        })
+}
 
-    for arg in &func.args {
-        if params.len() > 0 {
-            params.push_str(", ");
-            func_invoke.push_str(", ");
-        }
-
-        let param_dec = format!("{}: {}", arg.name, translate_type(arg.ty));
-        if let Some((shadowed_name, shadowed_val)) = get_shadowed_value(arg) {
-            let shadowed_name_ref = format!("&{}", &shadowed_name);
-            func_body.push_str(shadowed_val.as_ref());
-            func_invoke.push_str(shadowed_name_ref.as_ref());
-        } else {
-            func_invoke.push_str(arg.name.as_ref());
-        }
-
-        params.push_str(param_dec.as_ref());
+fn is_shadowed(ty: parser::Type) -> bool {
+    match ty {
+        parser::Type::String
+        | parser::Type::StringRef
+        | parser::Type::Str
+        | parser::Type::StrRef => true,
+        _ => false
     }
+}
+
+fn get_shadowed_name(arg: &parser::Arg) -> String {
+    match is_shadowed(arg.ty) {
+        true => format!("{}_shadow", arg.name),
+        false => arg.name.clone()
+    }
+}
+
+fn get_call_arg(arg: &parser::Arg) -> String {
+    match arg.ty {
+        parser::Type::StringRef => format!("&{}", get_shadowed_name(arg)),
+        parser::Type::StrRef => format!("&{}.as_ref()", get_shadowed_name(arg)),
+        parser::Type::Str => format!("{}.as_ref()", get_shadowed_name(arg)),
+        parser::Type::String | _ => format!("{}", get_shadowed_name(arg))
+    }
+}
+
+fn get_call_args(args: &Vec<parser::Arg>) -> String {
+    args.iter()
+        .map(|arg| get_call_arg(arg))
+        .fold(String::new(), |acc, arg| {
+            match acc.len() {
+                0 => arg,
+                _ => format!("{}, {}", acc, arg)
+            }
+        })
+}
+
+fn get_shadow_decl(arg: &parser::Arg) -> Option<String> {
+    match is_shadowed(arg.ty) {
+        true => match arg.ty {
+            parser::Type::StringRef
+            | parser::Type::String
+            | parser::Type::Str
+            | parser::Type::StrRef => Some(format!("let {} = ffigen::marshal::cstr_to_string({});", get_shadowed_name(arg), arg.name)),
+            _=> None
+        },
+        false => None
+    }
+}
+
+fn get_shadow_statements(args: &Vec<parser::Arg>) -> String {
+    args.iter()
+        .filter_map(|arg| get_shadow_decl(arg))
+        .map(|arg| format!("\t{}\n", arg))
+        .fold(String::new(), |acc, decl| format!("{}{}", acc, decl))
+}
+
+fn append_func(func: &parser::FuncDecl, func_name: &String, content: &mut String) {
+    let params = get_invoke_args(&func.args);
+    let mut func_body = get_shadow_statements(&func.args);
+    let func_call = format!("\tsuper::{}{}({});\n", func.module, func.name, get_call_args(&func.args));
 
     let func_decl = match func.ret {
         parser::ReturnType::Void => format!("#[no_mangle]\npub extern fn {}({}) {{\n", func_name, params),
         parser::ReturnType::Type(t) => format!("#[no_mangle]\npub extern fn {}({}) -> {} {{\n", func_name, params, translate_type(t))
     };
 
-    func_invoke.push_str(");\n");
-
-    func_body.push_str(func_invoke.as_ref());
+    func_body.push_str(func_call.as_ref());
 
     content.push_str(func_decl.as_ref());
     content.push_str(func_body.as_ref());
@@ -99,18 +147,6 @@ extern crate ffigen;
     final_content
 }
 
-fn get_shadowed_value(arg: &parser::Arg) -> Option<(String, String)> {
-    match arg.ty {
-        parser::Type::StringRef => {
-            let shadowed_name = format!("{}_shadow", arg.name);
-            let shadowed_decl = format!("\tlet {} = ffigen::marshal::cstr_to_string({});\n", shadowed_name, arg.name);
-
-            Some((shadowed_name, shadowed_decl))
-        },
-        _=> None
-    }
-}
-
 fn translate_type(ty: parser::Type) -> &'static str {
     match ty {
         parser::Type::U32 => "u32",
@@ -127,4 +163,92 @@ fn translate_type(ty: parser::Type) -> &'static str {
         parser::Type::Str => "*const u8",
         parser::Type::StrRef => "*const u8"
     }
+}
+
+/*****
+*   Tests
+*****/
+#[test]
+fn test_mangle() {
+    let no_mangle = parser::FuncDecl { 
+        name: "Foo".to_string(),
+        ret: parser::ReturnType::Void,
+        args: vec![parser::Arg { name: "arg1".to_string(), ty: parser::Type::U32 }],
+        module: "foo::bar".to_string()
+    };
+
+    let mangle_ret = parser::FuncDecl { 
+        name: "Foo".to_string(),
+        ret: parser::ReturnType::Type(parser::Type::String),
+        args: vec![parser::Arg { name: "arg1".to_string(), ty: parser::Type::U32 }],
+        module: "foo::bar".to_string()
+    };
+
+    let mangle_arg = parser::FuncDecl { 
+        name: "Foo".to_string(),
+        ret: parser::ReturnType::Void,
+        args: vec![parser::Arg { name: "arg1".to_string(), ty: parser::Type::StringRef }],
+        module: "foo::bar".to_string()
+    };
+
+    if let Some(_) = get_mangled_fn(&no_mangle) {
+        panic!("Non-mangled function returned mangled name".to_string());
+    }
+
+    if let None = get_mangled_fn(&mangle_ret) {
+        panic!("Mangled return type returned non-mangled name".to_string());
+    }
+
+    if let None = get_mangled_fn(&mangle_arg) {
+        panic!("Mangled arg type returned non-mangled name".to_string());
+    }
+}
+
+#[test]
+fn test_args() {
+    let mult_args = vec![
+        parser::Arg { name: "foo".to_string(), ty: parser::Type::U32 },
+        parser::Arg { name: "bar".to_string(), ty: parser::Type::StringRef }
+    ];
+
+    assert_eq!(get_invoke_args(&mult_args), format!("foo: {}, bar: {}", translate_type(mult_args[0].ty), translate_type(mult_args[1].ty)));
+
+    let single_arg = vec![ parser::Arg { name: "foo".to_string(), ty: parser::Type::Boolean }];
+
+    assert_eq!(get_invoke_args(&single_arg), format!("foo: {}", translate_type(single_arg[0].ty)));
+}
+
+#[test]
+fn test_invoke() {
+    let mult_args = vec![
+        parser::Arg { name: "foo".to_string(), ty: parser::Type::U32 },
+        parser::Arg { name: "bar".to_string(), ty: parser::Type::StringRef }
+    ];
+
+    assert_eq!(get_call_args(&mult_args), format!("{}, {}", get_call_arg(&mult_args[0]), get_call_arg(&mult_args[1])));
+
+    let single_arg = vec![ parser::Arg { name: "foo".to_string(), ty: parser::Type::Boolean }];
+
+    assert_eq!(get_call_args(&single_arg), get_call_arg(&single_arg[0]));
+
+    assert_eq!("foo_shadow", get_call_arg(&parser::Arg { name: "foo".to_string(), ty: parser::Type::String }));
+    assert_eq!("&foo_shadow", get_call_arg(&parser::Arg { name: "foo".to_string(), ty: parser::Type::StringRef }));
+    assert_eq!("foo_shadow.as_ref()", get_call_arg(&parser::Arg { name: "foo".to_string(), ty: parser::Type::Str }));
+    assert_eq!("&foo_shadow.as_ref()", get_call_arg(&parser::Arg { name: "foo".to_string(), ty: parser::Type::StrRef }));
+}
+
+#[test]
+fn test_shadow_decl() {
+    let mult_args = vec![
+        parser::Arg { name: "foo".to_string(), ty: parser::Type::U32 },
+        parser::Arg { name: "bar".to_string(), ty: parser::Type::StringRef }
+    ];
+
+    assert_eq!(None, get_shadow_decl(&mult_args[0]));
+    assert_eq!(Some(get_shadow_decl(&mult_args[1]).unwrap()), get_shadow_decl(&mult_args[1]));
+
+    assert_eq!(Some("let foo_shadow = ffigen::marshal::cstr_to_string(foo);".to_string()), get_shadow_decl(&parser::Arg { name: "foo".to_string(), ty: parser::Type::String }));
+    assert_eq!(Some("let foo_shadow = ffigen::marshal::cstr_to_string(foo);".to_string()), get_shadow_decl(&parser::Arg { name: "foo".to_string(), ty: parser::Type::StringRef }));
+    assert_eq!(Some("let foo_shadow = ffigen::marshal::cstr_to_string(foo);".to_string()), get_shadow_decl(&parser::Arg { name: "foo".to_string(), ty: parser::Type::Str }));
+    assert_eq!(Some("let foo_shadow = ffigen::marshal::cstr_to_string(foo);".to_string()), get_shadow_decl(&parser::Arg { name: "foo".to_string(), ty: parser::Type::StrRef }));
 }
