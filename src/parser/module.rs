@@ -10,6 +10,8 @@ pub fn parse(src: &Path, modules: &Vec<ModuleDecl>, parent_module: &String) -> (
     let mut exports_mod = Vec::new();
 
     for module in modules {
+        println!("Parsing module {}", module.name);
+
         //Don't parse our marshalling library
         if module.name == "ffigen" && parent_module == "" {
             continue;
@@ -21,7 +23,10 @@ pub fn parse(src: &Path, modules: &Vec<ModuleDecl>, parent_module: &String) -> (
         };
 
         let modname = format!("{}.rs", &module.name);
-        let mod_path = format!("{}::{}", parent_module, &module.name);
+        let mod_path = match parent_module.len() {
+            0 => module.name.clone(),
+            _ => format!("{}::{}", parent_module, &module.name)
+        };
         let filemod = root.join(&modname);
 
         if let Ok(meta) = fs::metadata(&filemod) {

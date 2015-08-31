@@ -17,7 +17,6 @@ pub enum Type {
     F64,
     Boolean,
 	String,
-    Str,
     StringRef,
     StrRef
 }
@@ -50,6 +49,8 @@ pub fn parse(path: &Path, module_path: &String) -> (Vec<FuncDecl>, Vec<ModuleDec
         Err(e) => panic!("Unable to parse {:?} {}", &path, e),
         Ok(_) => ()
     }
+
+    //@todo: Clear any marshaled code so compile errors don't fail gen
 
     let (mut exports, mut modules) = source::parse(path, module_path);
     let (sub_exports, sub_modules) = module::parse(&path, &modules, module_path);

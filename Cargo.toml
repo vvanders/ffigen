@@ -7,6 +7,7 @@ authors=["Val V"]
 [dependencies]
 syntex_syntax = "*"
 toml = "*"
+libc = "*"
 
 [lib]
 name = "ffigen"

@@ -44,7 +44,7 @@ pub fn parse(root: &Path) -> Info {
         Some(v) => {
             match v {
                 &Value::String(ref name) => {
-                    println!("Found package name {}", v);
+                    println!("Found package {}", v);
                     name.clone()
                 },
                 _ => panic!("unexpected type for name in toml {:?}", &toml_path)

@@ -59,6 +59,9 @@ pub fn gen(context: &Context) {
     let package_info = parser::cargo::parse(&root);
 
     let src_dir = root.join("src").join("lib.rs");
+    
+    println!("Parsing source at {:?}", &src_dir);
+
     let (exports, _) = parser::parse(&src_dir, &"".to_string());
 
     let marshal_result = gen::marshal::gen(&exports, Path::new(&context.output_wrapper));

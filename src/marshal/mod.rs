@@ -1,4 +1,4 @@
-﻿use std::mem;
+﻿extern crate libc;
 
 pub fn cstr_to_string(cstr: *const u8) -> String {
     let buffer = get_ascii_bytes(cstr);
@@ -12,15 +12,24 @@ pub fn cstr_to_string(cstr: *const u8) -> String {
 
 pub fn allocate_cstr(data: &String) -> *mut u8 {
     let translated = truncate_utf8_to_ascii(data.as_ref());
-    let alloc: *mut u8 = unsafe { mem::transmute(Box::new(translated.clone())) };
+    unsafe {
+        let allocated = libc::malloc(translated.len() as u64 + 1) as *mut u8;
 
-    alloc
+        let mut idx = 0;
+        for ascii in translated {
+            *allocated.offset(idx) = ascii;
+            idx += 1;
+        }
+
+        *allocated.offset(idx) = 0;
+
+        allocated
+    }
 }
 
+#[no_mangle]
 pub extern fn release_cstr(data: *mut u8) {
-    let boxed: Box<String> = unsafe { mem::transmute(data) };
-
-    drop(boxed);
+    unsafe { libc::free(data as *mut libc::c_void); }
 }
 
 fn truncate_utf8_to_ascii(data: &str) -> Vec<u8> {
