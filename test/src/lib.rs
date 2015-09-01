@@ -48,7 +48,7 @@ pub extern fn test_f64(p: f64) -> f64 {
 //Boolean marshaling
 #[no_mangle]
 pub extern fn test_bool(p: bool) -> bool {
-    p
+    p == true
 }
 
 //String marshaling

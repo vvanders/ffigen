@@ -40,7 +40,7 @@ namespace rust {
 		[DllImport("ffi_sample.dll")]
 		public static extern double test_f64(double p);
 
-		[DllImport("ffi_sample.dll")]
+[return: MarshalAs(UnmanagedType.I1)]		[DllImport("ffi_sample.dll")]
 		public static extern bool test_bool(bool p);
 
 		[DllImport("ffi_sample.dll")]

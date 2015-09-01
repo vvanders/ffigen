@@ -31,7 +31,6 @@
     <Content Include="build.rs" />
   </ItemGroup>
   <ItemGroup>
-    <File Include="src\ffigen\mod.rs" />
     <File Include="src\one.rs" />
     <File Include="src\two\mod.rs" />
   </ItemGroup>
