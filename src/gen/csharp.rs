@@ -1,19 +1,16 @@
-﻿extern crate syntex_syntax;
-
-use std;
-use std::path::Path;
+﻿use std;
 
 use parser;
 use parser::cargo;
 use gen::util;
 use gen::marshal;
 
-pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, dest: &Path) -> std::io::Result<()> {
+pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, opts: &Vec<::Config>) -> std::io::Result<()> {
     if !package_info.is_dynamic {
         panic!("Unable to export {} because library is not dynamic", package_info.name);
     }
 
-    let out_path = dest.join("mod.cs");
+    let out_path = util::get_output_dir(opts, &package_info.crate_root).join("Module.cs");
 
     let mut content = write_header(package_info);
 
@@ -105,6 +102,12 @@ fn write_export(content: &mut String, func: &parser::FuncDecl, package_info: &ca
         true => export_marshaled_return(func, package_info),
         false => format!("\t\t{}\n\t\t{}\n\n", get_import_decl(func, package_info), get_func_signature(func))
     };
+
+    //Boolean values are 1 byte size, so append this in order to marshal it correctly
+    match func.ret {
+        parser::ReturnType::Type(parser::Type::Boolean) => content.push_str("[return: MarshalAs(UnmanagedType.I1)]"),
+        _=> ()
+    }
 
     content.push_str(func_body.as_ref());
 }

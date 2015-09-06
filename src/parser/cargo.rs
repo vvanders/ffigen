@@ -1,4 +1,4 @@
-﻿use std::path::Path;
+﻿use std::path;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
@@ -9,10 +9,11 @@ use toml::Value;
 pub struct Info {
     pub name: String,
     pub lib_name: String,
-    pub is_dynamic: bool
+    pub is_dynamic: bool,
+    pub crate_root: path::PathBuf
 }
 
-pub fn parse(root: &Path) -> Info {
+pub fn parse(root: &path::Path) -> Info {
     let toml_path = root.join("Cargo.toml");
 
     match fs::metadata(&toml_path) {
@@ -76,5 +77,10 @@ pub fn parse(root: &Path) -> Info {
         }
     };
 
-    Info { name: package_name, lib_name: lib_name, is_dynamic: is_dynamic }
+    Info {
+        name: package_name,
+        lib_name: lib_name,
+        is_dynamic: is_dynamic,
+        crate_root: root.to_path_buf()
+    }
 }

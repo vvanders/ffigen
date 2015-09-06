@@ -12,12 +12,13 @@ pub enum Lang {
     CSharp,
     Java,
     C,
-    CPP
+    Cpp
 }
 
 #[derive(Clone)]
 pub enum Config {
-    Output(String)
+    Output(String),
+    Namespace(String)
 }
 
 pub struct Context {
@@ -70,22 +71,12 @@ pub fn gen(context: &Context) {
         panic!("Unable to export {}", e);
     }
     
-    for &(ref lang, ref opt) in context.langs.iter() {
-        //Select our option if we have it
-        let opt_dir = opt.iter()
-                .filter_map(|o| match *o { Config::Output(ref s) => Some(s.clone()) })
-                .fold(None, |_, o| Some(o.clone()));
-
-        let out_dir = match opt_dir {
-            Some(ref s) => Path::new(s).to_path_buf(),
-            None => {
-                Path::new(&context.crate_root).join("gen")
-            }
-        };
-
+    for &(ref lang, ref opts) in context.langs.iter() {
         let result = match *lang {
-            Lang::CSharp => gen::csharp::gen(&exports, &package_info, &out_dir),
-            _ => Ok(())
+            Lang::CSharp => gen::csharp::gen(&exports, &package_info, &opts),
+            Lang::Cpp => gen::cpp::gen(&exports, &package_info, &opts),
+            Lang::C => gen::c::gen(&exports, &package_info, &opts),
+            Lang::Java => Ok(())
         };
 
         if let Err(e) = result {
