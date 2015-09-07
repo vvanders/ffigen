@@ -10,6 +10,7 @@ pub struct Info {
     pub name: String,
     pub lib_name: String,
     pub is_dynamic: bool,
+    pub is_static: bool,
     pub crate_root: path::PathBuf
 }
 
@@ -65,22 +66,30 @@ pub fn parse(root: &path::Path) -> Info {
         }
     };
 
-    let is_dynamic = match config.lookup("lib.crate_type") {
+    let crate_type = match config.lookup("lib.crate_type") {
         None => panic!("toml {:?} doesn't have a [lib].crate_type", &toml_path),
-        Some(v) => {
-            match v {
-                &Value::Array(ref arr) => {
-                    arr.contains(&Value::String("dylib".to_string()))
-                }
-                _ => false
-            }
+        Some(s) => s
+    };
+
+    let is_dynamic = match crate_type {
+        &Value::Array(ref arr) => {
+            arr.contains(&Value::String("dylib".to_string()))
         }
+        _ => false
+    };
+
+    let is_static = match crate_type {
+        &Value::Array(ref arr) => {
+            arr.contains(&Value::String("lib".to_string()))
+        }
+        _ => false
     };
 
     Info {
         name: package_name,
         lib_name: lib_name,
         is_dynamic: is_dynamic,
+        is_static: is_static,
         crate_root: root.to_path_buf()
     }
 }

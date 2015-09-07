@@ -85,7 +85,10 @@ pub fn indent(content: String) -> String {
                 .fold(String::new(), |acc, c| acc + c) + line.as_ref()
         })
         //Rejoint the lines
-        .fold(String::new(), |acc, line| acc + "\n" + line.as_ref())
+        .fold(String::new(), |acc, line| match acc.len() {
+            0 => line,
+            _ => acc + "\n" + line.as_ref()
+        })
 }
 
 pub fn translate_return_type(ret: parser::ReturnType) -> &'static str {

@@ -18,7 +18,9 @@ pub enum Lang {
 #[derive(Clone)]
 pub enum Config {
     Output(String),
-    Namespace(String)
+    Namespace(String),
+    StaticOnly,
+    DynamicOnly
 }
 
 pub struct Context {
