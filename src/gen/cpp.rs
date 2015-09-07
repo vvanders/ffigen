@@ -24,8 +24,6 @@ pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, opts: &V
         source.push_str(end_source(&namespace).as_ref());
 
         source = commonc::indent(source);
-
-        panic!("\n{}\n\n{}", header, source);
     }
 
     Ok(())

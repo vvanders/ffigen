@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">default</Platform>
-    <ProjectGuid>be1b6e3f-606c-4754-8464-b829d93ef89b</ProjectGuid>
+    <ProjectGuid>dbdc5fa9-2cfc-479d-8cea-a03419337557</ProjectGuid>
     <OutputType>library</OutputType>
-    <CrateName>ffigen</CrateName>
-    <Name>ffigen</Name>
-    <RootNamespace>ffigen</RootNamespace>
+    <CrateName>msbuild_util</CrateName>
+    <Name>msbuild_util</Name>
+    <RootNamespace>msbuild_util</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|default' ">
     <LinkTimeOptimization>false</LinkTimeOptimization>
@@ -24,19 +24,6 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Code Include="src\lib.rs" />
-    <Folder Include="src\gen\" />
-    <Folder Include="src\marshal\" />
-    <Folder Include="src\parser\" />
-  </ItemGroup>
-  <ItemGroup>
-    <File Include="src\gen\csharp.rs" />
-    <File Include="src\gen\marshal.rs" />
-    <File Include="src\gen\mod.rs" />
-    <File Include="src\gen\util.rs" />
-    <File Include="src\marshal\mod.rs" />
-    <File Include="src\parser\cargo.rs" />
-    <File Include="src\parser\mod.rs" />
-    <File Include="src\parser\module.rs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Cargo.toml" />

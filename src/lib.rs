@@ -27,14 +27,22 @@ pub struct Context {
     langs: Vec<(Lang, Vec<Config>)>
 }
 
-pub fn new_context() -> Context {
-    let root = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let src = Path::new(&root).join("src");
-
-    Context { crate_root: root, output_wrapper: String::from(src.to_str().unwrap()), langs: Vec::new() }
-}
-
 impl Context {
+    pub fn new() -> Context {
+        let mut context = Context { crate_root: "".to_string(), output_wrapper: "".to_string(), langs: Vec::new() };
+
+        context.set_root(env::var("CARGO_MANIFEST_DIR").unwrap());
+
+        context
+    }
+
+    pub fn set_root(&mut self, path: String) {
+        let src = Path::new(&path).join("src");
+
+        self.crate_root = path;
+        self.output_wrapper = String::from(src.to_str().unwrap());
+    }
+
     pub fn add_lang(&mut self, lang: Lang, opts: &[Config]) {
         let mut vec_opts: Vec<Config> = Vec::new();
 
@@ -48,7 +56,7 @@ impl Context {
 }
 
 pub fn gen_cargo() {
-    let mut context = new_context();
+    let mut context = Context::new();
 
     context.langs.push((Lang::CSharp, Vec::new()));
 

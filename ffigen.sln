@@ -5,9 +5,13 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen", "ffigen.rsproj", "{BE1B6E3F-606C-4754-8464-B829D93EF89B}"
 EndProject
-Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen_test", "test\ffigen_test.rsproj", "{886A6AF5-01E3-4230-9C51-94A2453CC9CF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharp", "test\CSharp\CSharp.csproj", "{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppStatic", "test\Cpp\static\CppStatic.vcxproj", "{BB325686-ECB7-42D2-A6E7-0F241A96D5DA}"
+EndProject
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "ffigen_test", "test\scaffold\ffigen_test.rsproj", "{886A6AF5-01E3-4230-9C51-94A2453CC9CF}"
+EndProject
+Project("{78C9907C-C22D-4F8D-B13A-49F213FF1631}") = "msbuild_util", "test\msbuild_util\msbuild_util.rsproj", "{DBDC5FA9-2CFC-479D-8CEA-A03419337557}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +21,18 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BE1B6E3F-606C-4754-8464-B829D93EF89B}.Debug|x64.ActiveCfg = Debug|default
 		{BE1B6E3F-606C-4754-8464-B829D93EF89B}.Release|x64.ActiveCfg = Release|default
-		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Debug|x64.ActiveCfg = Debug|default
-		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Release|x64.ActiveCfg = Release|default
 		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Debug|x64.ActiveCfg = Debug|x64
 		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Debug|x64.Build.0 = Debug|x64
 		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Release|x64.ActiveCfg = Release|x64
 		{C4860C1D-39FC-44C0-8585-F7B1D7D4E292}.Release|x64.Build.0 = Release|x64
+		{BB325686-ECB7-42D2-A6E7-0F241A96D5DA}.Debug|x64.ActiveCfg = Debug|x64
+		{BB325686-ECB7-42D2-A6E7-0F241A96D5DA}.Debug|x64.Build.0 = Debug|x64
+		{BB325686-ECB7-42D2-A6E7-0F241A96D5DA}.Release|x64.ActiveCfg = Release|x64
+		{BB325686-ECB7-42D2-A6E7-0F241A96D5DA}.Release|x64.Build.0 = Release|x64
+		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Debug|x64.ActiveCfg = Debug|default
+		{886A6AF5-01E3-4230-9C51-94A2453CC9CF}.Release|x64.ActiveCfg = Release|default
+		{DBDC5FA9-2CFC-479D-8CEA-A03419337557}.Debug|x64.ActiveCfg = Debug|default
+		{DBDC5FA9-2CFC-479D-8CEA-A03419337557}.Release|x64.ActiveCfg = Release|default
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

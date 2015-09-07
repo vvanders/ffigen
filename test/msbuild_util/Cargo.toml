@@ -1,0 +1,4 @@
+[package]
+name="msbuild_util"
+version="0.0.1"
+authors=["Val V"]

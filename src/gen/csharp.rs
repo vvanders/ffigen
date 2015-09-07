@@ -105,7 +105,7 @@ fn write_export(content: &mut String, func: &parser::FuncDecl, package_info: &ca
 
     //Boolean values are 1 byte size, so append this in order to marshal it correctly
     match func.ret {
-        parser::ReturnType::Type(parser::Type::Boolean) => content.push_str("[return: MarshalAs(UnmanagedType.I1)]"),
+        parser::ReturnType::Type(parser::Type::Boolean) => content.push_str("\t\t[return: MarshalAs(UnmanagedType.I1)]\n"),
         _=> ()
     }
 
