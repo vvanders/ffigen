@@ -27,13 +27,12 @@ namespace CSharp
             Assert.AreEqual(64.0, ffigen_test_scaffold.test_f64(64.0f));
 
             Assert.AreEqual("foo", ffigen_test_scaffold.test_string("foo"));
-            Assert.AreEqual("foo", ffigen_test_scaffold.test_string_ref("foo"));
-            Assert.AreEqual("foo", ffigen_test_scaffold.test_str_ref("foo"));
+            Assert.AreEqual("bar", ffigen_test_scaffold.test_string_ref("bar"));
+            Assert.AreEqual("baz", ffigen_test_scaffold.test_str_ref("baz"));
 
             Assert.AreEqual((uint)32, ffigen_test_scaffold.mod_value(32));
             Assert.AreEqual((uint)32, ffigen_test_scaffold.sub_mod_value(32));
             Assert.AreEqual((uint)(1 + 2 + 3), ffigen_test_scaffold.test_multi_param_unsigned(1, 2, 3));
-
             Assert.AreEqual(-1 - 2 - 3, ffigen_test_scaffold.test_multi_param_signed(-1, -2, -3));
             Assert.AreEqual("foobarbaz", ffigen_test_scaffold.test_multi_str("foo", "bar", "baz"));
         }

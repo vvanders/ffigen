@@ -80,7 +80,7 @@ pub fn parse(root: &path::Path) -> Info {
 
     let is_static = match crate_type {
         &Value::Array(ref arr) => {
-            arr.contains(&Value::String("lib".to_string()))
+            arr.contains(&Value::String("staticlib".to_string()))
         }
         _ => false
     };

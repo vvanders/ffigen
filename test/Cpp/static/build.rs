@@ -9,7 +9,7 @@ fn main() {
     let mut context = ffigen::Context::new();
 
     context.set_root("../../scaffold".to_string());
-    context.add_lang(ffigen::Lang::Cpp, &[ffigen::Config::Output(".".to_string()), ffigen::Config::DynamicOnly]);
+    context.add_lang(ffigen::Lang::Cpp, &[ffigen::Config::Output(".".to_string()), ffigen::Config::StaticOnly]);
 
     ffigen::gen(&context);
 

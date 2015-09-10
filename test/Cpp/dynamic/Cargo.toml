@@ -1,0 +1,14 @@
+[package]
+name="ffigen_cppdynamic_test"
+version="0.0.1"
+authors=["Val V"]
+build="build.rs"
+
+[build-dependencies.ffigen]
+path="../../../"
+
+[build-dependencies.msbuild_util]
+path="../../msbuild_util"
+
+[dependencies.ffigen_test_scaffold]
+path="../../scaffold"

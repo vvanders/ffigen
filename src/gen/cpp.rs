@@ -5,6 +5,7 @@ use parser::cargo;
 
 use gen::util;
 use gen::commonc;
+use gen::marshal;
 
 pub fn gen(exports: &Vec<parser::FuncDecl>, package_info: &cargo::Info, opts: &Vec<::Config>) -> std::io::Result<()> {
     let namespace = util::get_namespace(opts, &package_info.name);
@@ -153,6 +154,13 @@ fn end_source(namespace: &String) -> String {
 }
 
 fn generate_functions(exports: &Vec<parser::FuncDecl>) -> String {
+    let rust_free_str = r#"void release_rust_string(RustString str) {
+typedef unsigned char (*FuncSignature)(RustString);
+static FuncSignature funcPtr = reinterpret_cast<FuncSignature>(GetAddr("release_cstr"));
+funcPtr(str);
+}
+"#;
+
     let content = exports.iter()
         .map(|func| {
             let args = func.args.iter().fold(String::new(), |acc, arg| match acc.len() {
@@ -177,18 +185,26 @@ fn generate_functions(exports: &Vec<parser::FuncDecl>) -> String {
                     })
                 );
 
+            let finalFunc = match marshal::get_mangled_fn(func) {
+                Some(v) => v,
+                None => func.name.clone()
+            };
+
             format!(
 r#"{} {{
 {}
 static FuncSignature funcPtr = reinterpret_cast<FuncSignature>(GetAddr("{}"));
 {}
 }}
-"#, get_function_decl(func), typedef, func.name, call)
+"#,
+                get_function_decl(func), typedef, finalFunc, call)
         })
-        .fold(String::new(), |acc, func| match acc.len() {
-            0 => func,
-            _ => acc + "\n" + func.as_ref()
+        .fold(String::new(), |acc, arg| {
+            match acc.len() {
+                0 => arg.to_string(),
+                _ => acc + "\n" + arg.as_ref()
+            }
         });
 
-    content
+    content + "\n" + rust_free_str
 }
