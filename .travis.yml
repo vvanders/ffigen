@@ -1,3 +1,7 @@
 language: rust
 rust:
   - stable
+env:
+  - SRC_DIR=.
+  - SRC_DIR=test
+script: cd $SRC_DIR && cargo build --verbose && cargo test --verbose
