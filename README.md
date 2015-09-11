@@ -1,4 +1,6 @@
 # ffigen
+[![Build Status](https://travis-ci.org/vvanders/ffigen.svg?branch=master)](https://travis-ci.org/vvanders/ffigen)
+
 Automatic generation of FFI bindings for calling Rust from other languages.
 
 Note that this library is currently a work-in-progress and not yet ready for serious use.
