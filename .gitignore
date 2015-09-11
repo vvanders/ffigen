@@ -4,3 +4,4 @@ target
 test/target
 *.sdf
 *.opensdf
+*.user
