@@ -3,7 +3,7 @@ use std::env;
 
 fn main() {
     cargo_dep("CSharp");
-    cargo_dep("cpp/dynamic");
+    cargo_dep("Cpp/dynamic");
 }
 
 fn cargo_dep(path: &str) {
