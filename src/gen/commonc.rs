@@ -2,15 +2,6 @@
 
 use parser;
 
-pub fn export_function_decls(exports: &Vec<parser::FuncDecl>) -> String {
-    let mut content = String::new();
-
-    for export in exports {
-    }
-
-    content
-}
-
 pub fn get_header_guard_start(package_name: &String) -> String {
     format!("#ifndef _{}_H_\n#define _{}_H_\n\n", package_name, package_name)
 }

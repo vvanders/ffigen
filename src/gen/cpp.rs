@@ -84,7 +84,7 @@ fn get_function_decl(func: &parser::FuncDecl) -> String {
     format!("{} {}({})", commonc::translate_return_type(func.ret), func.name, params)
 }
 
-fn export_functions(exports: &Vec<parser::FuncDecl>, isStatic: bool) -> String {
+fn export_functions(exports: &Vec<parser::FuncDecl>, is_static: bool) -> String {
     let mut content = exports.iter().
         map(|func| get_function_decl(func) + ";")
         .fold(String::new(), |acc, arg| match acc.len() {
@@ -100,7 +100,7 @@ fn export_functions(exports: &Vec<parser::FuncDecl>, isStatic: bool) -> String {
     //If we've got a static library then we just need to mark this as external and we're done
     content.split("\n")
         .map(|line| {
-            if isStatic && line.len() > 0 {
+            if is_static && line.len() > 0 {
                 "extern \"C\" ".to_string() + line
             } else {
                 line.to_string()
@@ -128,7 +128,7 @@ fn start_source(namespace: &String, library_name: &String, crate_name: &String) 
 
     content.push_str(commonc::get_namespace_start(namespace).as_ref());
 
-    let funcLoader = format!(r#"void* GetAddr(const char* name) {{
+    let func_loader = format!(r#"void* GetAddr(const char* name) {{
 #ifdef WIN32    
     static HMODULE dllHandle = LoadLibrary(L"{}.dll");
     return GetProcAddress(dllHandle, name);
@@ -140,7 +140,7 @@ fn start_source(namespace: &String, library_name: &String, crate_name: &String) 
 
 "#, library_name, library_name);
 
-    content.push_str(funcLoader.as_ref());
+    content.push_str(func_loader.as_ref());
 
     content
 }
@@ -185,7 +185,7 @@ funcPtr(str);
                     })
                 );
 
-            let finalFunc = match marshal::get_mangled_fn(func) {
+            let final_func = match marshal::get_mangled_fn(func) {
                 Some(v) => v,
                 None => func.name.clone()
             };
@@ -197,7 +197,7 @@ static FuncSignature funcPtr = reinterpret_cast<FuncSignature>(GetAddr("{}"));
 {}
 }}
 "#,
-                get_function_decl(func), typedef, finalFunc, call)
+                get_function_decl(func), typedef, final_func, call)
         })
         .fold(String::new(), |acc, arg| {
             match acc.len() {
