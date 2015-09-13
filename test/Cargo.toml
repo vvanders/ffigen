@@ -2,6 +2,4 @@
 name="ffigen_test"
 version="0.0.1"
 authors=["Val V"]
-
-[dependencies.ffigen_csharp_test]
-path = "CSharp"
+build="build.rs"
