@@ -6,7 +6,7 @@ description="Code generation of FFI buildings for other languages to call Rust"
 license="MIT"
 
 [dependencies]
-syntex_syntax = "*"
+syntex_syntax = "0.13.0"
 toml = "*"
 libc = "*"
 
