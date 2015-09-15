@@ -4,5 +4,5 @@ rust:
   - stable
 env:
   - SRC_DIR=.
-#  - SRC_DIR=test/CSharp #Disable this until we understand what target_os is on Travis
+  - SRC_DIR=test/CSharp
 script: cd $SRC_DIR && cargo build --verbose && cargo test --verbose

@@ -6,6 +6,14 @@ use std::fs;
 use std::env;
 
 fn main() {
+    if cfg!(target_os = "linux") {
+        panic!("linux");
+    } else if cfg!(target_os = "windows") {
+        panic!("windows");
+    } else {
+        panic!("unknown");
+    }
+
     let mut context = ffigen::Context::new();
 
     context.set_root("../scaffold".to_string());
