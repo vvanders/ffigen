@@ -13,6 +13,8 @@ namespace CSharp
 
         static void Main(string[] args)
         {
+            System.Console.Out.WriteLine("Starting Test");
+
             Assert.AreEqual((byte)8, ffigen_test_scaffold.test_u8(8));
             Assert.AreEqual((ushort)16, ffigen_test_scaffold.test_u16(16));
             Assert.AreEqual((uint)32, ffigen_test_scaffold.test_u32(32));

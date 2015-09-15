@@ -49,27 +49,9 @@ impl MSBuild {
     }
 
     pub fn build(&self) -> Result<String, InvokeError> {
-        let msbuild_loc = match Command::new("reg.exe")
-            .args(&["query", r#""HKLM\SOFTWARE\Microsoft\MSBuild\ToolsVersions\4.0"#, "/v", "MSBuildToolsPath"])
-            .output() {
-                Ok(s) => s,
-                Err(_) => return Err(InvokeError::MSBuildNotFound)
-        };
+        let platform_msbuild = try!(get_platform_msbuild());
 
-        if !msbuild_loc.status.success() {
-            return Err(InvokeError::MSBuildNotFound);
-        }
-
-        let msbuild_stdout: String = String::from_utf8_lossy(&msbuild_loc.stdout).into_owned();
-        let msbuild_path =  match msbuild_stdout
-            .split("REG_SZ")
-            .nth(1)
-            .and_then(|path| Some(path.trim())) {
-                Some(s) => s,
-                None => return Err(InvokeError::MSBuildNotFound)
-        };
-
-        let mut msbuild = Command::new(msbuild_path.to_string() + "\\MSBuild.exe");
+        let mut msbuild = Command::new(platform_msbuild);
         
         if let Some(ref project) = self.project {
             msbuild.arg(project.clone());
@@ -106,4 +88,34 @@ impl MSBuild {
 
         Ok(output)
     }
+}
+
+#[cfg(not(target_os = "windows"))]
+fn get_platform_msbuild() -> Result<String, InvokeError> {
+    Ok("xbuild".to_string())
+}
+
+#[cfg(target_os = "windows")]
+fn get_platform_msbuild() -> Result<String, InvokeError> {
+    let msbuild_loc = match Command::new("reg.exe")
+        .args(&["query", r#""HKLM\SOFTWARE\Microsoft\MSBuild\ToolsVersions\4.0"#, "/v", "MSBuildToolsPath"])
+        .output() {
+            Ok(s) => s,
+            Err(_) => return Err(InvokeError::MSBuildNotFound)
+    };
+
+    if !msbuild_loc.status.success() {
+        return Err(InvokeError::MSBuildNotFound);
+    }
+
+    let msbuild_stdout: String = String::from_utf8_lossy(&msbuild_loc.stdout).into_owned();
+    let msbuild_path =  match msbuild_stdout
+        .split("REG_SZ")
+        .nth(1)
+        .and_then(|path| Some(path.trim())) {
+            Some(s) => s,
+            None => return Err(InvokeError::MSBuildNotFound)
+    };
+
+    Ok(msbuild_path.to_string() + "\\MSBuild.exe")
 }

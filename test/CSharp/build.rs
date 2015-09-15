@@ -39,8 +39,8 @@ fn main() {
         panic!("Unable to run cargo {} {}", String::from_utf8_lossy(&cargo_result.stderr), String::from_utf8_lossy(&cargo_result.stdout));
     }
 
-    let target = format!("../scaffold/target/{}/ffi_test_scaffold.dll", config);
-    let dest = format!("bin/x64/{}/ffi_test_scaffold.dll", config);
+    let target = format!("../scaffold/target/{}/{}", config, get_output_lib(&"ffi_test_scaffold"));
+    let dest = format!("bin/x64/{}/{}", capatalize(&config.to_string()), get_output_lib(&"ffi_test_scaffold"));
 
     fs::copy(&target, &dest)
         .unwrap_or_else(|e| panic!("Unable to copy file from {} to {}, {}", target, dest, e));
@@ -49,7 +49,27 @@ fn main() {
     println!("cargo:rustc-cfg=config_{}", config);
 }
 
+fn capatalize(content: &String) -> String {
+    if content.len() == 0 {
+        return "".to_string();
+    }
+
+    content[..1].chars()
+        .flat_map(|c| c.to_uppercase())
+        .chain(content[1..].chars())
+        .collect::<String>()
+}
+
 #[cfg(target_os = "windows")]
+fn get_output_lib(name: &str) -> String {
+	format!("{}.dll", name)
+}
+
+#[cfg(not(target_os = "windows"))]
+fn get_output_lib(name: &str) -> String {
+	format!("lib{}.so", name)
+}
+
 fn build(config: &String) {
     let msbuild = msbuild_util::MSBuild::new()
         .project("CSharp.csproj")
@@ -67,8 +87,4 @@ fn build(config: &String) {
             msbuild_util::InvokeError::BuildFailure(s) => panic!("Build Failed {}", s)
         }
     }
-}
-
-#[cfg(not(target_os = "windows"))]
-fn build(config: &String) {
 }
