@@ -8,4 +8,4 @@ path = "../../"
 
 [lib]
 name = "ffi_test_scaffold"
-crate_type = ["staticlib", "dylib"]
+crate_type = ["dylib"]

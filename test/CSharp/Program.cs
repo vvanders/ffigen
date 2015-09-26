@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using rust;
+﻿using rust;
 using System.Runtime.InteropServices;
+using NUnit.Framework;
 
 namespace CSharp
 {
