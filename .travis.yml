@@ -1,7 +1,8 @@
 language: rust
+install:
 rust:
   - stable
 env:
   - SRC_DIR=.
-  - SRC_DIR=test
+  - SRC_DIR=test/CSharp
 script: cd $SRC_DIR && cargo build --verbose && cargo test --verbose
