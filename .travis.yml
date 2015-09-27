@@ -5,7 +5,7 @@ addons:
       - "directhex/ppa"
     packages:
       - mono-complete
-	  - mono-vbnc
+      - mono-vbnc
 rust:
   - stable
 env:
