@@ -2,7 +2,7 @@ language: rust
 addons:
   apt:
     sources:
-	  - directhex/ppa
+	  - "directhex/ppa"
     packages:
       - mono-complete
 	  - mono-vbnc
