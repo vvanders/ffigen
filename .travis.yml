@@ -1,11 +1,8 @@
 language: rust
-addons:
-  apt:
-    sources:
-      - "ppa:directhex/ppa"
-    packages:
-      - mono-complete
-      - mono-vbnc
+before_install:
+	- sudo apt-add-repository ppa:directhex/ppa -y
+	- sudo apt-get update -qq
+	- sudo apt-get install mono-complete mono-vbnc
 rust:
   - stable
 env:
