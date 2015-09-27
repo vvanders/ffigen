@@ -1,6 +1,8 @@
 language: rust
 addons:
   apt:
+    sources:
+	  - ppa:directhex/ppa
     packages:
       - mono-complete
 	  - mono-vbnc
