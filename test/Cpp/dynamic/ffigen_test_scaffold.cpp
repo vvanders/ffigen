@@ -13,7 +13,7 @@ namespace ffigen_test_scaffold {
 		    static HMODULE dllHandle = LoadLibrary(L"ffi_test_scaffold.dll");
 		    return GetProcAddress(dllHandle, name);
 		#else
-		    static void* soHandle = dlopen("ffi_test_scaffold.so", RTLD_LAZY);
+		    static void* soHandle = dlopen("./libffi_test_scaffold.so", RTLD_LAZY);
 		    return dlsym(soHandle, name);
 		#endif  //WIN32
 	}

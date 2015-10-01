@@ -133,7 +133,7 @@ fn start_source(namespace: &String, library_name: &String, crate_name: &String) 
     static HMODULE dllHandle = LoadLibrary(L"{}.dll");
     return GetProcAddress(dllHandle, name);
 #else
-    static void* soHandle = dlopen("{}.so", RTLD_LAZY);
+    static void* soHandle = dlopen("./lib{}.so", RTLD_LAZY);
     return dlsym(soHandle, name);
 #endif  //WIN32
 }}

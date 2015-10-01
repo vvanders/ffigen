@@ -39,8 +39,8 @@ fn main() {
         panic!("Unable to run cargo {} {}", String::from_utf8_lossy(&cargo_result.stderr), String::from_utf8_lossy(&cargo_result.stdout));
     }
 
-    let target = format!("../../scaffold/target/{}/ffi_test_scaffold.dll", config);
-    let dest = format!("x64/{}/ffi_test_scaffold.dll", config);
+    let target = format!("../../scaffold/target/{}/{}", config, get_output_lib(&"ffi_test_scaffold"));
+    let dest = format!("target/{}/{}", &config.to_string(), get_output_lib(&"ffi_test_scaffold"));
 
     fs::copy(&target, &dest)
         .unwrap_or_else(|e| panic!("Unable to copy file from {} to {}, {}", target, dest, e));
@@ -71,4 +71,22 @@ fn build(config: &String) {
 
 #[cfg(not(target_os = "windows"))]
 fn build(config: &String) {
+    let exec = Command::new("make")
+        .arg(format!("CONFIG={}", config))
+        .output()
+        .unwrap_or_else(|e| panic!("Unable to run make {}", e));
+
+    if !exec.status.success() {
+        panic!("Unable to run make {} {}", String::from_utf8_lossy(&exec.stderr), String::from_utf8_lossy(&exec.stdout));
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn get_output_lib(name: &str) -> String {
+	format!("{}.dll", name)
+}
+
+#[cfg(not(target_os = "windows"))]
+fn get_output_lib(name: &str) -> String {
+	format!("lib{}.so", name)
 }
