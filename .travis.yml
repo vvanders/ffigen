@@ -3,10 +3,12 @@ before_install:
   - sudo apt-add-repository ppa:directhex/ppa -y
   - sudo apt-get update -qq
   - sudo apt-get install mono-complete mono-vbnc
+  - sudo apt-get install g++
 
 rust:
   - stable
 env:
   - SRC_DIR=.
   - SRC_DIR=test/CSharp
+  - SRC_DIR=test/Cpp/dynamic
 script: cd $SRC_DIR && cargo build --verbose && cargo test --verbose
